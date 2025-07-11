@@ -1,0 +1,10 @@
+{
+  "name": "heendy-quiz",
+  "version": "1.0.0",
+  "description": "현대백화점 흰디 퀴즈",
+  "scripts": {
+    "build": "echo 'Build complete'"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

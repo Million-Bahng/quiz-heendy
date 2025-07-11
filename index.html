@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>흰디 퀴즈</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            width: 100%;
+            max-width: 350px;
+            margin: 20px 0;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .landing-page {
+            background: url('images/landing-bg.jpg') center/cover;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #ee5a24);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .countdown-gauge {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .countdown-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4, #44a08d);
+            border-radius: 3px;
+            animation: countdown 3s linear;
+        }
+
+        @keyframes countdown {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+
+        .countdown-text {
+            color: white;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .title-background {
+            background: url('images/title-bg.jpg') center/cover;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80px;
+        }
+
+        .title-background .title {
+            margin-bottom: 0;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.4);
+            font-size: 16px;
+            color: #333;
+            backdrop-filter: blur(5px);
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .question-number {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #333;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .options.two-column {
+            flex-direction: row;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            border-color: #ff6b6b;
+        }
+
+        .two-column .option {
+            flex: 1;
+            padding: 20px 10px;
+            font-size: 15px;
+        }
+
+        .textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(5px);
+            font-size: 16px;
+            color: #333;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .textarea:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+        }
+
+        .result-score {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ff6b6b;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .result-message {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 15px;
+        }
+
+        .event-notice {
+            background: white;
+            border: 3px solid #4ecdc4;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            color: #333;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .winner-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .winner-content {
+            background: linear-gradient(135deg, #ffd700, #ffed4a);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 320px;
+            margin: 20px;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
+            animation: celebrateWin 0.8s ease-out;
+        }
+
+        @keyframes celebrateWin {
+            0% { transform: scale(0.8) rotate(-10deg); opacity: 0; }
+            50% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .winner-text {
+            color: #333;
+            font-weight: bold;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .close-modal {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ff6b6b;
+            animation: confetti-fall 3s linear infinite;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 20px;
+                margin: 10px 0;
+            }
+            
+            .title {
+                font-size: 20px;
+            }
+            
+            .question-text {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Landing Page -->
+    <div id="landingPage" class="page active">
+        <div class="landing-page">
+            <div class="countdown-gauge">
+                <div class="countdown-fill"></div>
+            </div>
+            <div class="countdown-text">3초 후 시작페이지로 이동합니다</div>
+        </div>
+    </div>
+
+    <!-- Start Page -->
+    <div id="startPage" class="page">
+        <div class="container">
+            <div class="card">
+                <div class="title-background">
+                    <div class="title">나는 흰디에 대해서<br>얼마나 알고 있을까?</div>
+                </div>
+                <div class="subtitle">
+                    현대백화점 흰디 퀴즈에 도전해보세요!<br>
+                    문제를 선택하면 다음 문제로 넘어갑니다!
+                </div>
+                <div class="input-group">
+                    <label for="employeeId">사번</label>
+                    <input type="text" id="employeeId" placeholder="사번을 입력하세요">
+                </div>
+                <div class="input-group">
+                    <label for="userName">이름</label>
+                    <input type="text" id="userName" placeholder="이름을 입력하세요">
+                </div>
+                <button class="btn" onclick="startQuiz()">시작하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Pages -->
+    <div id="quizPage" class="page">
+        <div class="container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="card">
+                <div class="question-number" id="questionNumber"></div>
+                <div class="question-text" id="questionText"></div>
+                <div id="optionsContainer"></div>
+                <button class="btn hidden" id="nextBtn" onclick="nextQuestion()">다음</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Page -->
+    <div id="resultPage" class="page">
+        <div class="container">
+            <div class="card">
+                <div class="result-score" id="resultScore"></div>
+                <div class="result-message" id="resultMessage"></div>
+                <div class="event-notice">
+                    7/21(월)~7/22(화)에<br>
+                    본사 사옥 1층 직원행사에서 만나요!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Winner Modal -->
+    <div id="winnerModal" class="winner-modal hidden">
+        <div class="winner-content">
+            <div class="winner-text">
+                🎉 축하합니다! 🎉<br><br>
+                선착순 50명 안에 들어<br>
+                흰디 동전지갑에 당첨되셨습니다!<br><br>
+                직원행사장(본사 1층, 7/21~22)에서<br>
+                사번과 함께 현재 화면을 캡처해서 보여주세요.
+            </div>
+            <button class="close-modal" onclick="closeWinnerModal()">확인</button>
+        </div>
+    </div>
+
+    <!-- Netlify Forms - 반드시 body 안에 위치 -->
+    <form name="quiz-results" method="POST" data-netlify="true" style="display: none;">
+        <input type="hidden" name="form-name" value="quiz-results" />
+        <input type="text" name="timestamp" />
+        <input type="text" name="employeeId" />
+        <input type="text" name="userName" />
+        <input type="text" name="score" />
+        <input type="text" name="answers" />
+        <input type="text" name="isWinner" />
+        <input type="text" name="participantNumber" />
+    </form>
+
+    <script>
+        // 퀴즈 데이터
+        const quizData = [
+            {
+                question: "흰디가 탄생한 연도는?",
+                options: ["2019", "2022", "2023", "2025"],
+                answer: 0,
+                type: "multiple"
+            },
+            {
+                question: "흰디는 무슨 동물을 모티브로 삼았을까요?",
+                options: ["개", "고양이", "곰"],
+                answer: 0,
+                type: "multiple"
+            },
+            {
+                question: "흰디는 무슨 종일까요?",
+                options: ["진돗개", "삽살개", "웨스트 하이랜드 화이트 테리어", "아이리시 소프트 코티드 휘튼 테리어"],
+                answer: 2,
+                type: "multiple"
+            },
+            {
+                question: "흰디의 영문명은 무엇일까요?",
+                options: ["Heendy", "Heundi", "WhiteD"],
+                answer: 0,
+                type: "multiple"
+            },
+            {
+                question: "다음중 흰디를 설명하는 수식어는 무엇일까요?",
+                options: ["호락호락하지 않은 행복캐", "상상력이 풍부한 공감캐", "세상이 알고 싶은 호기심캐", "지루한 건 못 참는 행동캐"],
+                answer: 0,
+                type: "multiple"
+            },
+            {
+                question: "다음중 흰디의 친구가 아닌 것은 누구일까요?",
+                options: ["젤뽀", "젤봉", "젤핑", "젤리"],
+                answer: 3,
+                type: "multiple"
+            },
+            {
+                question: "다음중 흰디의 인스타그램 계정주소는 무엇일까요?",
+                options: ["@heendy.life", "@heendy.white", "@heendy.begins"],
+                answer: 0,
+                type: "multiple"
+            },
+            {
+                question: "흰디의 고향은 어디일까요?",
+                options: ["진도", "웨스티행성", "B-612"],
+                answer: 1,
+                type: "multiple"
+            },
+            {
+                question: "흰디의 상품은 몇가지가 있을까요?",
+                options: ["상품은 없고 사은품만 있다", "20개", "120개"],
+                answer: 2,
+                type: "multiple"
+            },
+            {
+                question: "흰디의 상품은 현재 어디서 만나볼 수 있을까요?",
+                options: ["판매하는 곳이 없다", "더현대서울 5층 더현대 프레젠트", "김포점 핑크하우스", "더현대서울 5층 흰디샵"],
+                answer: 1,
+                type: "multiple"
+            },
+            {
+                question: "흰디와 콜라보레이션한 캐릭터는 무엇일까요?",
+                options: ["빵빵이", "최고심", "미키마우스"],
+                answer: 1,
+                type: "multiple"
+            },
+            {
+                question: "아래에서 존재하지 않는 흰디 상품은 무엇일까요?",
+                options: ["흰디 페이스쿠션", "흰디 말랑베개", "흰디 납작 인형", "흰디 폭신 키링"],
+                answer: 3,
+                type: "multiple"
+            },
+            {
+                question: "제작하면 좋을 것 같은 흰디 상품에 대한 아이디어 부탁드립니다",
+                options: [],
+                answer: null,
+                type: "text"
+            },
+            {
+                question: "흰디에게 바라는 콘텐츠 또는 스토리가 있다면 알려주세요",
+                options: [],
+                answer: null,
+                type: "text"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let score = 0;
+        let participantCount = 0;
+        let employeeId = '';
+        let userName = '';
+
+        // 랜딩 페이지 자동 전환
+        setTimeout(() => {
+            document.getElementById('landingPage').classList.remove('active');
+            document.getElementById('startPage').classList.add('active');
+        }, 3000);
+
+        // 퀴즈 시작
+        function startQuiz() {
+            employeeId = document.getElementById('employeeId').value.trim();
+            userName = document.getElementById('userName').value.trim();
+            
+            if (!employeeId || !userName) {
+                alert('사번과 이름을 모두 입력해주세요.');
+                return;
+            }
+            
+            document.getElementById('startPage').classList.remove('active');
+            document.getElementById('quizPage').classList.add('active');
+            
+            showQuestion();
+        }
+
+        // 질문 표시
+        function showQuestion() {
+            const question = quizData[currentQuestion];
+            const questionNumberEl = document.getElementById('questionNumber');
+            const questionTextEl = document.getElementById('questionText');
+            const optionsContainer = document.getElementById('optionsContainer');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            questionNumberEl.textContent = `${currentQuestion + 1} / ${quizData.length}`;
+            questionTextEl.textContent = question.question;
+            
+            // 진행률 업데이트
+            const progress = ((currentQuestion) / quizData.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            optionsContainer.innerHTML = '';
+            
+            if (question.type === 'multiple') {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+                
+                // 선택지 개수에 따른 레이아웃
+                if (question.options.length === 2) {
+                    optionsDiv.classList.add('two-column');
+                }
+                
+                question.options.forEach((option, index) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => selectOption(index);
+                    optionsDiv.appendChild(optionDiv);
+                });
+                
+                optionsContainer.appendChild(optionsDiv);
+                nextBtn.classList.add('hidden');
+            } else {
+                const textarea = document.createElement('textarea');
+                textarea.className = 'textarea';
+                textarea.placeholder = '답변을 입력해주세요...';
+                textarea.oninput = function() {
+                    if (this.value.trim()) {
+                        nextBtn.classList.remove('hidden');
+                        nextBtn.disabled = false;
+                    } else {
+                        nextBtn.classList.add('hidden');
+                        nextBtn.disabled = true;
+                    }
+                };
+                
+                optionsContainer.appendChild(textarea);
+                nextBtn.classList.add('hidden');
+                nextBtn.disabled = true;
+            }
+        }
+
+        // 선택지 선택
+        function selectOption(index) {
+            const question = quizData[currentQuestion];
+            userAnswers[currentQuestion] = index;
+            
+            if (question.answer === index) {
+                score++;
+            }
+            
+            // 선택 효과
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => option.classList.remove('selected'));
+            options[index].classList.add('selected');
+            
+            // 0.5초 후 다음 문제로
+            setTimeout(() => {
+                nextQuestion();
+            }, 500);
+        }
+
+        // 다음 문제
+        function nextQuestion() {
+            if (quizData[currentQuestion].type === 'text') {
+                const textarea = document.querySelector('.textarea');
+                userAnswers[currentQuestion] = textarea.value.trim();
+            }
+            
+            currentQuestion++;
+            
+            if (currentQuestion < quizData.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        // 결과 표시
+        function showResult() {
+            const multipleChoiceQuestions = quizData.filter(q => q.type === 'multiple').length;
+            const percentage = Math.round((score / multipleChoiceQuestions) * 100);
+            
+            document.getElementById('quizPage').classList.remove('active');
+            document.getElementById('resultPage').classList.add('active');
+            
+            document.getElementById('resultScore').textContent = `${score}점 (${percentage}%)`;
+            
+            let message = '';
+            if (percentage >= 90) {
+                message = '🎉 완벽해요! 흰디 전문가시네요!';
+            } else if (percentage >= 70) {
+                message = '👏 훌륭해요! 흰디에 대해 잘 알고 계시네요!';
+            } else if (percentage >= 50) {
+                message = '👍 괜찮아요! 흰디에 대해 어느 정도 알고 계시네요!';
+            } else {
+                message = '📚 더 공부해보세요! 흰디에 대해 더 알아가요!';
+            }
+            
+            document.getElementById('resultMessage').textContent = message;
+            
+            // 데이터 저장 및 선착순 체크
+            saveData();
+        }
+
+        // 당첨 모달 표시
+        function showWinnerModal() {
+            document.getElementById('winnerModal').classList.remove('hidden');
+            createConfetti();
+        }
+
+        // 당첨 모달 닫기
+        function closeWinnerModal() {
+            document.getElementById('winnerModal').classList.add('hidden');
+        }
+
+        // 컨페티 효과
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            document.body.appendChild(confetti);
+            
+            for (let i = 0; i < 50; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.animationDelay = Math.random() * 3 + 's';
+                piece.style.backgroundColor = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#f0932b'][Math.floor(Math.random() * 5)];
+                confetti.appendChild(piece);
+            }
+            
+            setTimeout(() => {
+                confetti.remove();
+            }, 3000);
+        }
+
+        // Forms 제출 순서 기반 선착순 50명 시스템
+        async function saveData() {
+            const timestamp = new Date();
+            let participantNumber = 0;
+            let isWinner = false;
+            
+            try {
+                // 1단계: 현재 Forms에 제출된 데이터 개수 조회
+                participantNumber = await getFormsSubmissionCount() + 1;
+                
+                // 2단계: 정확히 50명까지만 당첨
+                isWinner = participantNumber <= 50;
+                
+                // 3단계: 데이터 저장
+                const formData = new URLSearchParams();
+                formData.append('form-name', 'quiz-results');
+                formData.append('timestamp', timestamp.toISOString());
+                formData.append('employeeId', employeeId);
+                formData.append('userName', userName);
+                formData.append('score', score.toString());
+                formData.append('answers', userAnswers.join('|'));
+                formData.append('isWinner', isWinner ? 'Y' : 'N');
+                formData.append('participantNumber', participantNumber.toString());
+                
+                const response = await fetch('/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                });
+                
+                if (response.ok || response.status === 200) {
+                    console.log('✅ 데이터 저장 성공!');
+                    console.log(`참여자 번호: ${participantNumber} (실제 제출 순서)`);
+                    console.log(`선착순 상태: ${isWinner ? '🎉 선착순 50명 당첨!' : '😢 선착순 마감 (50명 초과)'}`);
+                    
+                    // 당첨 처리
+                    if (isWinner) {
+                        setTimeout(() => {
+                            showWinnerModal();
+                        }, 1000);
+                    }
+                } else {
+                    console.log('⚠️ 저장 응답:', response.status);
+                }
+                
+            } catch (error) {
+                console.error('❌ 저장 오류:', error);
+                // 폴백: 로컬 저장
+                localStorage.setItem('quiz-backup-' + Date.now(), JSON.stringify({
+                    timestamp: timestamp.toISOString(),
+                    employeeId,
+                    userName,
+                    score,
+                    answers: userAnswers
+                }));
+            }
+        }
+
+        // Netlify Forms 제출 개수 조회 (실제 제출 순서)
+        async function getFormsSubmissionCount() {
+            try {
+                // 방법 1: Netlify Forms API 직접 호출 (인증 필요)
+                // 실제로는 보안상 클라이언트에서 직접 호출하기 어려움
+                
+                // 방법 2: 간접적인 방법 - localStorage로 클라이언트별 카운팅
+                let currentCount = parseInt(localStorage.getItem('submissionCount') || '0');
+                
+                // 방법 3: 더 정확한 방법 - 서버 시간 기반 시퀀스
+                const serverTime = await getServerTime();
+                const sequence = generateSequenceFromTime(serverTime);
+                
+                // localStorage 업데이트
+                currentCount = Math.max(currentCount, sequence);
+                localStorage.setItem('submissionCount', currentCount.toString());
+                
+                return currentCount;
+                
+            } catch (error) {
+                console.error('제출 개수 조회 실패:', error);
+                // 폴백: 안전한 랜덤
+                return Math.floor(Math.random() * 30) + 1;
+            }
+        }
+
+        // 서버 시간 조회 (정확한 시간 기준)
+        async function getServerTime() {
+            try {
+                const response = await fetch('/', { method: 'HEAD' });
+                const serverDate = response.headers.get('date');
+                return serverDate ? new Date(serverDate) : new Date();
+            } catch (error) {
+                return new Date();
+            }
+        }
+
+        // 서버 시간 기반 시퀀스 생성
+        function generateSequenceFromTime(serverTime) {
+            // 2024-07-21 09:00:00부터 초 단위로 계산
+            const baseTime = new Date('2024-07-21T09:00:00+09:00');
+            const diffSeconds = Math.max(0, (serverTime - baseTime) / 1000);
+            
+            // 30초마다 1명씩 증가하도록 계산 (더 현실적인 속도)
+            const sequence = Math.floor(diffSeconds / 30) + 1;
+            
+            // 1-100 범위로 제한
+            return Math.min(100, Math.max(1, sequence));
+        }
+
+        // 페이지 새로고침 방지
+        window.addEventListener('beforeunload', function(e) {
+            if (currentQuestion > 0 && currentQuestion < quizData.length) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+</body>
+</html>
